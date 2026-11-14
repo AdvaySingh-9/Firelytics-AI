@@ -26,8 +26,5 @@ export const navItems = [
   {id:'library',label:'Experiment Library',icon:'Library',group:'RESEARCH'},
   {id:'compare',label:'Compare Studies',icon:'GitCompareArrows',group:'RESEARCH'},
   {id:'analytics',label:'Research Analytics',icon:'ChartNoAxesCombined',group:'RESEARCH'},
-  {id:'safety',label:'Safety Insights',icon:'ShieldCheck',group:'INTELLIGENCE'},
-  {id:'explorer',label:'Data Explorer',icon:'Database',group:'INTELLIGENCE'},
-  {id:'assistant',label:'Research Assistant',icon:'MessageSquareText',group:'INTELLIGENCE'},
   {id:'settings',label:'Settings & API',icon:'Settings2',group:'SYSTEM'}
 ];

@@ -1,7 +1,83 @@
-node_modules/
-dist/
+
+# ==========================================
+# ENVIRONMENT VARIABLES / SECRETS
+# ==========================================
 .env
-.venv/
+.env.*
+!.env.example
+!.env.*.example
+
+# ==========================================
+# PYTHON
+# ==========================================
 __pycache__/
 *.py[cod]
+*$py.class
+*.pyd
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+venv/
+.venv/
+ENV/
+
+# ==========================================
+# NODE / REACT / VITE
+# ==========================================
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ==========================================
+# DATABASE TEMPORARY FILES
+# ==========================================
+*.sqlite-journal
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
+*.db-wal
+*.db-shm
+
+# Local raw ingestion and temporary outputs
+database/data/raw/
+database/data/tmp/
+database/data/temp/
+
+# ==========================================
+# LOGS / TEMPORARY FILES
+# ==========================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# ==========================================
+# IDE / EDITOR
+# ==========================================
+.vscode/
+.idea/
+*.code-workspace
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
 .DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# BUILD / TEST ARTIFACTS
+# ==========================================
+coverage/
+playwright-report/
+test-results/

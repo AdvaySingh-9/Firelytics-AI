@@ -5,7 +5,7 @@ let mode = 'demo';
 export const getMode = () => mode;
 export async function request(path, options={}) {
   const controller = new AbortController();
-  const timeout = setTimeout(()=>controller.abort(), 9000);
+  const timeout = setTimeout(()=>controller.abort(), 30000);
   try {
     const response = await fetch(`${BASE}${path}`, { ...options, signal:controller.signal, headers:{'Content-Type':'application/json', ...(options.headers||{})} });
     if (!response.ok) throw new Error(`API ${response.status}: ${await response.text()}`);
