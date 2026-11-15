@@ -12,7 +12,7 @@ TEXT_FILTERS = ("research_area", "sub_research_area", "project_type", "hardware"
 SORTS = ("relevance", "newest", "oldest", "title")
 
 STOPWORDS = set("""a an the of in on at to for with and or but about as by from into over under is are was were be
-been being do does did how what which who whom whose why when where can could would should will shall may might
+been being do does did how what which who whom whose why when where can could would should will shall may might using uses used
 me my we our you your i it its this that these those there their them they show find give tell list get
 experiment experiments study studies research related relating regarding any all some""".split())
 
