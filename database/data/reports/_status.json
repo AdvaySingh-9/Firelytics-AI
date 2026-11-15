@@ -1,0 +1,125 @@
+{
+  "PSI-10": {
+    "status": "ok",
+    "pages": 109,
+    "chars": 255138,
+    "pdf": "report.pdf"
+  },
+  "PSI-100": {
+    "status": "no_pdf"
+  },
+  "PSI-101": {
+    "status": "ok",
+    "pages": 89,
+    "chars": 173955,
+    "pdf": "report.pdf"
+  },
+  "PSI-102": {
+    "status": "ok",
+    "pages": 68,
+    "chars": 178541,
+    "pdf": "report.pdf"
+  },
+  "PSI-106": {
+    "status": "no_pdf"
+  },
+  "PSI-107": {
+    "status": "ok",
+    "pages": 92,
+    "chars": 112161,
+    "pdf": "report.pdf"
+  },
+  "PSI-108": {
+    "status": "ok",
+    "pages": 16,
+    "chars": 55095,
+    "pdf": "report.pdf"
+  },
+  "PSI-115": {
+    "status": "ok",
+    "pages": 25,
+    "chars": 54472,
+    "pdf": "report.pdf"
+  },
+  "PSI-117": {
+    "status": "ok",
+    "pages": 227,
+    "chars": 331834,
+    "pdf": "report.pdf"
+  },
+  "PSI-142": {
+    "status": "no_pdf"
+  },
+  "PSI-159": {
+    "status": "ok",
+    "pages": 93,
+    "chars": 203995,
+    "pdf": "report.pdf"
+  },
+  "PSI-181": {
+    "status": "ok",
+    "pages": 39,
+    "chars": 97811,
+    "pdf": "report.pdf"
+  },
+  "PSI-20": {
+    "status": "no_pdf"
+  },
+  "PSI-21": {
+    "status": "no_pdf"
+  },
+  "PSI-22": {
+    "status": "ok",
+    "pages": 15,
+    "chars": 35430,
+    "pdf": "report.pdf"
+  },
+  "PSI-23": {
+    "status": "ok",
+    "pages": 15,
+    "chars": 43243,
+    "pdf": "report.pdf"
+  },
+  "PSI-25": {
+    "status": "ok",
+    "pages": 144,
+    "chars": 332475,
+    "pdf": "report.pdf"
+  },
+  "PSI-26": {
+    "status": "ok",
+    "pages": 11,
+    "chars": 12934,
+    "pdf": "report.pdf"
+  },
+  "PSI-39": {
+    "status": "ok",
+    "pages": 13,
+    "chars": 24367,
+    "pdf": "report.pdf"
+  },
+  "PSI-47": {
+    "status": "ok",
+    "pages": 14,
+    "chars": 31515,
+    "pdf": "report.pdf"
+  },
+  "PSI-60": {
+    "status": "no_pdf"
+  },
+  "PSI-62": {
+    "status": "no_pdf"
+  },
+  "PSI-68": {
+    "status": "no_pdf"
+  },
+  "PSI-69": {
+    "status": "no_pdf"
+  },
+  "PSI-98": {
+    "status": "no_pdf"
+  },
+  "PSI-99": {
+    "status": "no_pdf"
+  }
+}
