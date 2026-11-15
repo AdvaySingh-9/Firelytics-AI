@@ -1,4 +1,5 @@
 """Parse a PSI ISA-Tab i_Investigation.txt into a clean flat dict."""
+
 import csv
 import io
 from datetime import datetime
@@ -13,7 +14,7 @@ def read_fields(path) -> dict:
         if not row or not any(c.strip() for c in row):
             continue
         key = row[0].strip()
-        if len(row) == 1 and key.isupper():          # section header like STUDY
+        if len(row) == 1 and key.isupper():  # section header like STUDY
             continue
         fields[key] = [c.strip() for c in row[1:] if c.strip()]
     return fields

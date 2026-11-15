@@ -1,4 +1,5 @@
 """Pick the final-report PDF and extract its text."""
+
 import json
 import re
 from pathlib import Path
@@ -6,6 +7,7 @@ from pathlib import Path
 from . import config
 
 
+# fmt: off
 def choose_report(candidates):
     """candidates: list of (name_or_key, size_bytes). Returns the best one or None.
     Prefers names containing REPORT_NAME_HINTS (more hints first, then smaller file).
@@ -23,6 +25,9 @@ def choose_report(candidates):
     return candidates[0] if len(candidates) == 1 else None
 
 
+# fmt: on
+
+
 def find_report_pdf(folder: Path):
     """Locate the report PDF inside data/raw/<id>/ (report.pdf first, else best match)."""
     pdfs = [p for p in folder.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf"]
@@ -35,7 +40,7 @@ def find_report_pdf(folder: Path):
 
 def clean_text(t: str) -> str:
     t = t.replace("\r", "")
-    t = re.sub(r"(\w)-\n(\w)", r"\1\2", t)       # join words hyphenated across lines
+    t = re.sub(r"(\w)-\n(\w)", r"\1\2", t)  # join words hyphenated across lines
     t = re.sub(r"[ \t]+\n", "\n", t)
     t = re.sub(r"\n{3,}", "\n\n", t)
     return t.strip()
@@ -43,6 +48,7 @@ def clean_text(t: str) -> str:
 
 def extract_pdf_text(pdf: Path):
     from pypdf import PdfReader
+
     reader = PdfReader(str(pdf))
     if reader.is_encrypted:
         reader.decrypt("")
@@ -68,10 +74,17 @@ def extract_all(force: bool = False) -> dict:
             text, pages = extract_pdf_text(pdf)
             out.write_text(text, encoding="utf-8")
             ok = len(text) >= 50
-            status[sid] = {"status": "ok" if ok else "no_text", "pages": pages, "chars": len(text),
-                           "pdf": pdf.name}
-            print(f"[reports] {sid}: {pages} pages, {len(text)} chars" + ("" if ok else "  (no text: scanned PDF?)"))
-        except Exception as e:                      # never kill the batch
+            status[sid] = {
+                "status": "ok" if ok else "no_text",
+                "pages": pages,
+                "chars": len(text),
+                "pdf": pdf.name,
+            }
+            print(
+                f"[reports] {sid}: {pages} pages, {len(text)} chars"
+                + ("" if ok else "  (no text: scanned PDF?)")
+            )
+        except Exception as e:  # never kill the batch
             status[sid] = {"status": "error", "error": str(e)[:200]}
             print(f"[reports] {sid}: ERROR {e}")
     status_path.write_text(json.dumps(status, indent=2))

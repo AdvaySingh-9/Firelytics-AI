@@ -1,4 +1,5 @@
 """Search spec, query builder, experiment lookups and facets (SQLite FTS5)."""
+
 import json
 import re
 import sqlite3
@@ -6,15 +7,31 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-FTS_COLUMNS = ("title", "objective", "approach", "hypothesis", "research_impacts", "keywords", "report")
-TEXT_FILTERS = ("research_area", "sub_research_area", "project_type", "hardware",
-                "flight_platform", "managing_center")
+FTS_COLUMNS = (
+    "title",
+    "objective",
+    "approach",
+    "hypothesis",
+    "research_impacts",
+    "keywords",
+    "report",
+)
+TEXT_FILTERS = (
+    "research_area",
+    "sub_research_area",
+    "project_type",
+    "hardware",
+    "flight_platform",
+    "managing_center",
+)
 SORTS = ("relevance", "newest", "oldest", "title")
 
-STOPWORDS = set("""a an the of in on at to for with and or but about as by from into over under is are was were be
+STOPWORDS = set(
+    """a an the of in on at to for with and or but about as by from into over under is are was were be
 been being do does did how what which who whom whose why when where can could would should will shall may might
 me my we our you your i it its this that these those there their them they show find give tell list get
-experiment experiments study studies research related relating regarding any all some""".split())
+experiment experiments study studies research related relating regarding any all some""".split()
+)
 
 
 # ---------- search spec (the contract with the "search AI") ----------
@@ -51,8 +68,16 @@ class Filters(BaseModel):
     start_year_min: int | None = None
     start_year_max: int | None = None
 
-    @field_validator("research_area", "sub_research_area", "project_type", "keywords", "hardware",
-                    "flight_platform", "managing_center", mode="before")
+    @field_validator(
+        "research_area",
+        "sub_research_area",
+        "project_type",
+        "keywords",
+        "hardware",
+        "flight_platform",
+        "managing_center",
+        mode="before",
+    )
     @classmethod
     def _lists(cls, v):
         return _as_list(v)
@@ -86,7 +111,9 @@ class SearchSpec(BaseModel):
     @field_validator("search_in", mode="before")
     @classmethod
     def _search_in(cls, v):
-        return [x.strip().lower() for x in _as_list(v) if x.strip().lower() in FTS_COLUMNS]
+        return [
+            x.strip().lower() for x in _as_list(v) if x.strip().lower() in FTS_COLUMNS
+        ]
 
     @field_validator("filters", mode="before")
     @classmethod
@@ -141,11 +168,16 @@ def _filter_sql(f: Filters):
     for field in TEXT_FILTERS:
         vals = getattr(f, field)
         if vals:
-            where.append("(" + " OR ".join(f"e.{field} LIKE ? ESCAPE '\\'" for _ in vals) + ")")
+            where.append(
+                "(" + " OR ".join(f"e.{field} LIKE ? ESCAPE '\\'" for _ in vals) + ")"
+            )
             params += [_like(v) for v in vals]
     if f.keywords:
-        where.append("EXISTS (SELECT 1 FROM experiment_keywords k WHERE k.study_id = e.study_id AND ("
-                     + " OR ".join("k.keyword LIKE ? ESCAPE '\\'" for _ in f.keywords) + "))")
+        where.append(
+            "EXISTS (SELECT 1 FROM experiment_keywords k WHERE k.study_id = e.study_id AND ("
+            + " OR ".join("k.keyword LIKE ? ESCAPE '\\'" for _ in f.keywords)
+            + "))"
+        )
         params += [_like(v) for v in f.keywords]
     if f.has_report is not None:
         where.append("e.has_report = ?")
@@ -159,8 +191,10 @@ def _filter_sql(f: Filters):
     return where, params
 
 
-CARD_COLS = ("e.study_id, e.title, e.acronym, e.research_area, e.sub_research_area, e.project_type, "
-             "e.start_year, e.end_year, e.has_report, e.keywords_json")
+CARD_COLS = (
+    "e.study_id, e.title, e.acronym, e.research_area, e.sub_research_area, e.project_type, "
+    "e.start_year, e.end_year, e.has_report, e.keywords_json"
+)
 
 
 def _card(row) -> dict:
@@ -179,25 +213,42 @@ def search(con: sqlite3.Connection, spec: SearchSpec) -> dict:
     where, params = _filter_sql(spec.filters)
     if tokens:
         columns = spec.search_in or []
-        from_sql = "search_index JOIN experiments e ON e.study_id = search_index.study_id"
+        from_sql = (
+            "search_index JOIN experiments e ON e.study_id = search_index.study_id"
+        )
         where = ["search_index MATCH ?"] + where
         params = [_match_expr(tokens, spec.match, columns)] + params
         # bm25 weights follow the FTS column order: study_id, title, objective, approach,
         # hypothesis, research_impacts, keywords, report
-        select = (CARD_COLS + ", -bm25(search_index, 0, 8, 5, 3, 4, 3, 6, 1) AS score, "
-                  "snippet(search_index, -1, '<mark>', '</mark>', '…', 24) AS snippet")
+        select = (
+            CARD_COLS + ", -bm25(search_index, 0, 8, 5, 3, 4, 3, 6, 1) AS score, "
+            "snippet(search_index, -1, '<mark>', '</mark>', '…', 24) AS snippet"
+        )
         relevance = "score DESC"
     else:
         from_sql = "experiments e"
         select = CARD_COLS + ", NULL AS score, '' AS snippet"
         relevance = "e.title COLLATE NOCASE"
-    order = {"relevance": relevance, "newest": "e.start_date DESC", "oldest": "e.start_date ASC",
-             "title": "e.title COLLATE NOCASE"}[spec.sort] + ", e.study_id"
+    order = {
+        "relevance": relevance,
+        "newest": "e.start_date DESC",
+        "oldest": "e.start_date ASC",
+        "title": "e.title COLLATE NOCASE",
+    }[spec.sort] + ", e.study_id"
     where_sql = (" WHERE " + " AND ".join(where)) if where else ""
-    total = con.execute(f"SELECT COUNT(*) FROM {from_sql}{where_sql}", params).fetchone()[0]
-    rows = con.execute(f"SELECT {select} FROM {from_sql}{where_sql} ORDER BY {order} LIMIT ? OFFSET ?",
-                       params + [spec.limit, spec.offset]).fetchall()
-    return {"total": total, "limit": spec.limit, "offset": spec.offset, "results": [_card(r) for r in rows]}
+    total = con.execute(
+        f"SELECT COUNT(*) FROM {from_sql}{where_sql}", params
+    ).fetchone()[0]
+    rows = con.execute(
+        f"SELECT {select} FROM {from_sql}{where_sql} ORDER BY {order} LIMIT ? OFFSET ?",
+        params + [spec.limit, spec.offset],
+    ).fetchall()
+    return {
+        "total": total,
+        "limit": spec.limit,
+        "offset": spec.offset,
+        "results": [_card(r) for r in rows],
+    }
 
 
 # ---------- lookups ----------
@@ -206,7 +257,10 @@ def get_experiments(con: sqlite3.Connection, ids, include_report: bool = False) 
     con.row_factory = sqlite3.Row
     found, missing = [], []
     for sid in ids:
-        row = con.execute("SELECT * FROM experiments WHERE study_id = ? COLLATE NOCASE", (sid.strip(),)).fetchone()
+        row = con.execute(
+            "SELECT * FROM experiments WHERE study_id = ? COLLATE NOCASE",
+            (sid.strip(),),
+        ).fetchone()
         if row is None:
             missing.append(sid)
             continue
@@ -214,7 +268,9 @@ def get_experiments(con: sqlite3.Connection, ids, include_report: bool = False) 
         d["keywords"] = json.loads(d.pop("keywords_json") or "[]")
         d["has_report"] = bool(d["has_report"])
         if include_report:
-            r = con.execute("SELECT text FROM reports WHERE study_id = ?", (d["study_id"],)).fetchone()
+            r = con.execute(
+                "SELECT text FROM reports WHERE study_id = ?", (d["study_id"],)
+            ).fetchone()
             d["report_text"] = r["text"] if r else ""
         found.append(d)
     return {"experiments": found, "missing": missing}
@@ -229,11 +285,22 @@ def facets(con: sqlite3.Connection) -> dict:
         for (v,) in con.execute(f"SELECT {field} FROM experiments WHERE {field} != ''"):
             for part in v.split(" | "):
                 counts[part] = counts.get(part, 0) + 1
-        out[field] = [{"value": k, "count": c} for k, c in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
-    out["keywords"] = [{"value": r[0], "count": r[1]} for r in con.execute(
-        "SELECT keyword, COUNT(DISTINCT study_id) c FROM experiment_keywords GROUP BY keyword ORDER BY c DESC, keyword")]
-    y = con.execute("SELECT MIN(start_year), MAX(start_year) FROM experiments").fetchone()
+        out[field] = [
+            {"value": k, "count": c}
+            for k, c in sorted(counts.items(), key=lambda x: (-x[1], x[0]))
+        ]
+    out["keywords"] = [
+        {"value": r[0], "count": r[1]}
+        for r in con.execute(
+            "SELECT keyword, COUNT(DISTINCT study_id) c FROM experiment_keywords GROUP BY keyword ORDER BY c DESC, keyword"
+        )
+    ]
+    y = con.execute(
+        "SELECT MIN(start_year), MAX(start_year) FROM experiments"
+    ).fetchone()
     out["start_year"] = {"min": y[0], "max": y[1]}
-    t = con.execute("SELECT COUNT(*), COALESCE(SUM(has_report),0) FROM experiments").fetchone()
+    t = con.execute(
+        "SELECT COUNT(*), COALESCE(SUM(has_report),0) FROM experiments"
+    ).fetchone()
     out["totals"] = {"experiments": t[0], "with_report": t[1]}
     return out

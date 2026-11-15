@@ -1,4 +1,5 @@
 """FastAPI app: search + experiment lookups. Run: python -m psi_db serve  (docs at /docs)."""
+
 import sqlite3
 from typing import Optional
 
@@ -10,7 +11,9 @@ from . import config
 from .search import SearchSpec, facets, get_experiments, search
 
 app = FastAPI(title="PSI Combustion Experiments DB", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+)
 
 
 def db():
@@ -24,31 +27,59 @@ def db():
         con.close()
 
 
-SECTION_FIELDS = [("objective", "Objective"), ("hypothesis", "Hypothesis"),
-                  ("approach", "Approach"), ("research_impacts", "Research impacts")]
-FACT_FIELDS = [("research_area", "Research area"), ("sub_research_area", "Sub-research area"),
-               ("project_type", "Project type"), ("hardware", "Hardware"),
-               ("flight_platform", "Flight platform"), ("managing_center", "Managing NASA center"),
-               ("start_date", "Start date"), ("end_date", "End date")]
+SECTION_FIELDS = [
+    ("objective", "Objective"),
+    ("hypothesis", "Hypothesis"),
+    ("approach", "Approach"),
+    ("research_impacts", "Research impacts"),
+]
+FACT_FIELDS = [
+    ("research_area", "Research area"),
+    ("sub_research_area", "Sub-research area"),
+    ("project_type", "Project type"),
+    ("hardware", "Hardware"),
+    ("flight_platform", "Flight platform"),
+    ("managing_center", "Managing NASA center"),
+    ("start_date", "Start date"),
+    ("end_date", "End date"),
+]
 
 
 def _decorate(exp: dict) -> dict:
     """Add the fields the UI/AI need: source link, attribution, limited-info notice, display layout."""
     sid = exp["study_id"].upper()
-    exp["report_url"] = f"/experiments/{exp['study_id']}/report.pdf" if exp.get("report_pdf") else None
-    exp["source_url"] = exp.get("source_url") or config.SOURCE_URL_TEMPLATE.format(study_id=sid)
+    exp["report_url"] = (
+        f"/experiments/{exp['study_id']}/report.pdf" if exp.get("report_pdf") else None
+    )
+    exp["source_url"] = exp.get("source_url") or config.SOURCE_URL_TEMPLATE.format(
+        study_id=sid
+    )
     exp["source_attribution"] = config.SOURCE_ATTRIBUTION
     exp["limited_info"] = not exp["has_report"]
-    exp["limited_info_message"] = None if exp["has_report"] else config.LIMITED_INFO_MESSAGE
-    exp["sections"] = [{"key": k, "label": lbl, "text": exp[k]} for k, lbl in SECTION_FIELDS if exp.get(k)]
-    exp["facts"] = [{"key": k, "label": lbl, "value": exp[k]} for k, lbl in FACT_FIELDS if exp.get(k)]
+    exp["limited_info_message"] = (
+        None if exp["has_report"] else config.LIMITED_INFO_MESSAGE
+    )
+    exp["sections"] = [
+        {"key": k, "label": lbl, "text": exp[k]}
+        for k, lbl in SECTION_FIELDS
+        if exp.get(k)
+    ]
+    exp["facts"] = [
+        {"key": k, "label": lbl, "value": exp[k]}
+        for k, lbl in FACT_FIELDS
+        if exp.get(k)
+    ]
     return exp
 
 
 @app.get("/health")
 def health(con=Depends(db)):
     meta = dict(con.execute("SELECT key, value FROM meta").fetchall())
-    return {"status": "ok", "experiments": int(meta.get("experiment_count", 0)), "built_at": meta.get("built_at")}
+    return {
+        "status": "ok",
+        "experiments": int(meta.get("experiment_count", 0)),
+        "built_at": meta.get("built_at"),
+    }
 
 
 @app.get("/facets")
@@ -72,9 +103,14 @@ def structured_search(spec: SearchSpec, con=Depends(db)):
 
 
 @app.get("/experiments")
-def experiments(ids: Optional[str] = Query(None, description="comma-separated, e.g. PSI-69,PSI-70"),
-                include_report: bool = False, limit: int = 50, offset: int = 0, con=Depends(db)):
-    if not ids:                                            # browse mode: cards for all experiments
+def experiments(
+    ids: Optional[str] = Query(None, description="comma-separated, e.g. PSI-69,PSI-70"),
+    include_report: bool = False,
+    limit: int = 50,
+    offset: int = 0,
+    con=Depends(db),
+):
+    if not ids:  # browse mode: cards for all experiments
         return search(con, SearchSpec(sort="title", limit=limit, offset=offset))
     id_list = [i for i in ids.split(",") if i.strip()]
     if len(id_list) > 10:
@@ -111,4 +147,8 @@ def report_pdf(study_id: str, con=Depends(db)):
     path = config.ROOT / res["experiments"][0]["report_pdf"]
     if not path.exists():
         raise HTTPException(404, "PDF file missing on disk")
-    return FileResponse(path, media_type="application/pdf", filename=f"{res['experiments'][0]['study_id']}-report.pdf")
+    return FileResponse(
+        path,
+        media_type="application/pdf",
+        filename=f"{res['experiments'][0]['study_id']}-report.pdf",
+    )

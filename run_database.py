@@ -7,13 +7,16 @@
 
 Same commands as `python -m psi_db ...`, just without needing to cd into database/.
 """
+
 import os
 import sys
 from pathlib import Path
 
 DB_DIR = Path(__file__).resolve().parent / "database"
 sys.path.insert(0, str(DB_DIR))
-os.environ["PYTHONPATH"] = str(DB_DIR) + os.pathsep + os.environ.get("PYTHONPATH", "")  # for the server process
+os.environ["PYTHONPATH"] = (
+    str(DB_DIR) + os.pathsep + os.environ.get("PYTHONPATH", "")
+)  # for the server process
 
 from psi_db.__main__ import main  # noqa: E402
 
