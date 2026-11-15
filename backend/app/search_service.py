@@ -124,7 +124,7 @@ def understand_query(query: str) -> tuple[dict, str]:
         return _fallback_parse(query), "keyword_fallback"
     try:
         from groq import Groq
-        client = Groq(api_key=api_key, timeout=20.0, max_retries=1)
+        client = Groq(api_key=api_key, timeout=12.0, max_retries=0)
         response = client.chat.completions.create(
             model=os.getenv("GROQ_SEARCH_MODEL", MODEL_DEFAULT),
             messages=[

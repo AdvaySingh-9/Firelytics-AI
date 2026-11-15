@@ -19,3 +19,53 @@
 /* Investigation page: focused tools instead of separate workspace destinations */
 .investigation-tools-panel{margin-top:15px}.investigation-tools-panel>.panel-head{align-items:flex-start}.investigation-tools-panel>.panel-head>div{min-width:0}.investigation-tools-panel>.panel-head h2{margin-bottom:5px}.investigation-tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}.investigation-tool-card{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;padding:13px;background:#172337;border:1px solid #304158;border-radius:9px;color:#dce6f2;cursor:pointer;transition:border-color .15s,background .15s}.investigation-tool-card>svg:first-child{color:#efa36d;flex-shrink:0}.investigation-tool-card>svg:last-child{color:#74869e;flex-shrink:0}.investigation-tool-card>span{flex:1;min-width:0}.investigation-tool-card b,.investigation-tool-card small{display:block}.investigation-tool-card b{font-size:10px}.investigation-tool-card small{font-size:8px;color:#8fa0b5;line-height:1.5;margin-top:4px}.investigation-tool-card:hover,.investigation-tool-card.active{border-color:#e9955e;background:#252a2e}.investigation-tool-content{margin-top:16px;padding:15px;background:#111e30;border:1px solid #2c4058;border-radius:9px}.investigation-tool-content>h3{margin:0 0 7px;font:600 13px Manrope;color:#e6edf6}.investigation-tool-content>.muted-copy{margin:0 0 13px}.investigation-tools-hint{margin:14px 0 0}.data-availability-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;margin:12px 0;background:#19283b;border:1px solid #30445d;border-radius:8px}.data-availability-row b,.data-availability-row small{display:block}.data-availability-row b{font-size:10px;color:#dce6f2}.data-availability-row small{font-size:8px;color:#8fa0b5;margin-top:4px;line-height:1.5}.data-availability-row .text-btn{white-space:nowrap}.compact-upload{padding:20px 14px}.compact-upload .upload-icon{width:38px;height:38px;margin-bottom:8px}.compact-upload h3{margin:0 0 5px;font-size:11px}.compact-upload p{margin:0 0 10px}.compact-upload small{margin-top:8px}.data-preview-head{margin-top:16px}.investigation-chat-header{padding:0 0 12px}.investigation-chat-messages{height:260px;padding:13px 0}.investigation-tool-content .chat-input{padding:12px 0 0}.investigation-tool-content .chat-footnote{padding:9px 0 0}.investigation-tool-content .safety-focus-options{margin-top:12px}
 @media(max-width:900px){.investigation-tool-grid{grid-template-columns:1fr}.data-availability-row{align-items:flex-start;flex-direction:column}.data-availability-row .text-btn{align-self:flex-start}}
+
+/* Evidence-grounded safety analysis output */
+.safety-result { margin-top: 14px; padding: 14px; border: 1px solid var(--border, #e5e7eb); border-radius: 12px; white-space: pre-wrap; line-height: 1.6; overflow-wrap: anywhere; }
+
+/* Temporary PSI manifest / session diagnostics */
+.session-manifest-panel .panel-head{align-items:flex-start}
+.session-file-list{display:grid;gap:7px;margin-top:14px;max-height:390px;overflow:auto}
+.session-file-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:#17263a;border:1px solid #2a3d55;border-radius:8px;min-width:0}
+.session-file-row>span:first-child{min-width:0}
+.session-file-row b,.session-file-row small{display:block;overflow-wrap:anywhere}
+.session-file-row b{font-size:9px;color:#dce6f2;font-weight:600}
+.session-file-row small{font-size:8px;color:#8fa0b5;margin-top:4px}
+.session-file-row .tag{flex:0 0 auto;max-width:45%;overflow-wrap:anywhere;white-space:normal}
+.tag-green{color:#8fe0b0;background:#17382f;border:1px solid #285744}
+@media(max-width:650px){.session-file-row{align-items:flex-start;flex-direction:column}.session-file-row .tag{max-width:100%}}
+
+/* Temporary evidence capability indicators */
+.capability-status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:12px 0 16px}
+.capability-status-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--line,#e5e7eb);border-radius:10px;background:var(--panel,#fff);font-size:12px;text-transform:capitalize}
+.dataset-discovery-results{margin:14px 0;padding:14px;border:1px solid var(--line,#e5e7eb);border-radius:12px;background:var(--panel,#fff)}
+.dataset-discovery-results .session-file-row{padding:10px 0;border-bottom:1px solid var(--line,#e5e7eb)}
+.dataset-discovery-results .session-file-row:last-child{border-bottom:0}
+
+.session-header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.ingestion-progress{padding:9px 12px;border-left:3px solid var(--orange,#f97316);background:var(--surface-soft,#fff7ed);border-radius:6px}
+
+/* The PSI file manifest is not part of the metadata-first user workflow. */
+.session-manifest-panel{display:none!important}
+.comparison-ai-analysis{margin:18px 0;padding:18px;border:1px solid var(--border);border-radius:12px;background:var(--panel-soft,transparent)}
+.comparison-ai-analysis p{line-height:1.65}
+
+/* Metadata-first investigation page: never surface the PSI file manifest/inventory. */
+.session-manifest-panel{display:none!important}
+.formatted-text{display:grid;gap:5px;color:inherit;font-size:inherit;line-height:1.72;white-space:normal}
+.formatted-text p{margin:0;color:inherit;font-size:inherit;line-height:inherit}
+.formatted-text h4{margin:8px 0 2px;color:#f0a36c;font-size:11px;font-weight:700}
+.formatted-list-item{padding-left:8px;color:inherit}
+.formatted-spacer{height:3px}
+.formatted-text strong{color:#edf2f8;font-weight:700}
+.formatted-text code{font-size:.92em;color:#f3b27f;background:#25334a;padding:1px 4px;border-radius:3px}
+.formatted-text hr{width:100%;border:0;border-top:1px solid #34445a}
+.explain-section .formatted-text{font-size:12px;color:#b8c4d4}
+.chat-bubble .formatted-text{font-size:inherit}
+
+.data-availability-row{display:none!important}
+
+
+/* Shared PSI navigation and file-upload actions in chatbot/safety workspaces */
+.workspace-source-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.workspace-source-actions .secondary-btn{display:inline-flex;align-items:center;gap:8px}
