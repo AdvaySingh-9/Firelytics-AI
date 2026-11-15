@@ -7,7 +7,8 @@ export async function request(path, options={}, timeoutMs=30000) {
   const controller = new AbortController();
   const timeout = setTimeout(()=>controller.abort(), timeoutMs);
   try {
-    const response = await fetch(`${BASE}${path}`, { ...options, signal:controller.signal, headers:{'Content-Type':'application/json', ...(options.headers||{})} });
+    const headers = options.body instanceof FormData ? (options.headers||{}) : {'Content-Type':'application/json', ...(options.headers||{})};
+    const response = await fetch(`${BASE}${path}`, { ...options, signal:controller.signal, headers });
     if (!response.ok) throw new Error(`API ${response.status}: ${await response.text()}`);
     mode = 'api'; return await response.json();
   } finally { clearTimeout(timeout); }
@@ -17,6 +18,14 @@ export async function loadInvestigations() {
   catch { mode='demo'; return investigations; }
 }
 export async function checkHealth() { return request('/health'); }
+export async function chatAssistant(message, history=[]) {
+  return request('/chat',{method:'POST',body:JSON.stringify({message,history})});
+}
+export async function uploadReport(file) {
+  const form=new FormData();
+  form.append('file',file);
+  return request('/upload',{method:'POST',body:form});
+}
 export async function smartSearch(query) {
   try { return await request('/search',{method:'POST',body:JSON.stringify({query})}); }
   catch { const q=query.toLowerCase(); const items=investigations.filter(x=>(x.study_id+' '+x.title+' '+x.acronym+' '+x.objective+' '+x.assets.join(' ')).toLowerCase().includes(q) || (q.includes('flex')&&x.study_id==='PSI-69') || (q.includes('metadata')&&x.availability==='metadata_only')); return {query,results:items,mode:'demo',message:'Local catalogue search. Connect the search endpoint and NASA data index for semantic retrieval.'}; }

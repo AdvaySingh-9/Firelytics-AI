@@ -24,7 +24,7 @@ export const navItems = [
   {id:'overview',label:'Overview',icon:'LayoutDashboard',group:'WORKSPACE'},
   {id:'search',label:'AI Smart Search',icon:'Search',group:'WORKSPACE'},
   {id:'library',label:'Experiment Library',icon:'Library',group:'RESEARCH'},
-  {id:'compare',label:'Compare Studies',icon:'GitCompareArrows',group:'RESEARCH'},
+  {id:'assistant',label:'Research Assistant',icon:'MessagesSquare',group:'RESEARCH'},
   {id:'analytics',label:'Research Analytics',icon:'ChartNoAxesCombined',group:'RESEARCH'},
   {id:'settings',label:'Settings & API',icon:'Settings2',group:'SYSTEM'}
 ];
